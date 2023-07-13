@@ -38,7 +38,6 @@ class HomeController extends GetxController {
 
   Future<void> allUserViewModel() async {
     _allUserApiResponse = ApiResponse.loading(message: 'Loading');
-    update();
     try {
       List<AllUserResponseModel> allUserList =
           await AllUserRepo().allUserRepo();

@@ -10,4 +10,6 @@ class ApiUrl {
   static String verifyUser = 'user/verifyUser';
   static String resendOtp = 'user/resendOtp';
   static String allUserList = 'user/allUsers';
+  static String getAllTask = 'task/allTasks';
+  static String getSingleTask = 'task/';
 }

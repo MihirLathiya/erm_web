@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:erm_web/Model/Api/api_exception.dart';
+import 'package:erm_web/Model/Service/get_storage_service.dart';
 import 'package:http/http.dart' as http;
 
 enum APIType {
@@ -20,8 +21,7 @@ class APIService {
       // Map<String, String>? header,
       bool fileUpload = false}) async {
     Map<String, String> header = {
-      "Authorization":
-          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiMTllMjFmMC0wZmU2LTRhZWYtODMzZC0xNTUyOWI4N2E1ODEiLCJtb2JpbGVObyI6Ijk4MjQwMjIwMDkiLCJyb2xlIjoidXNlciIsImlhdCI6MTY4OTI3MjcyMCwiZXhwIjoxNjg5MzU5MTIwfQ.3xVwAJbJlgW_uTjT4W8-5AmvtnqapiTfFVT2sF5zy9Y",
+      "Authorization": "Bearer ${PreferenceManager.getToken()}",
     };
 
     try {

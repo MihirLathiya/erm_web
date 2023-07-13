@@ -75,7 +75,6 @@ class AuthViewModel extends GetxController {
 
   Future<void> loginViewModel({Map<String, dynamic>? model}) async {
     _logInApiResponse = ApiResponse.loading(message: 'Loading');
-    update();
     try {
       LogInResponseModel logInResponse =
           await AuthRepo().logInRepo(body: model);
@@ -98,7 +97,6 @@ class AuthViewModel extends GetxController {
 
   Future<void> verifyUserViewModel({Map<String, dynamic>? model}) async {
     _logInverifyUserApiResponse = ApiResponse.loading(message: 'Loading');
-    update();
     try {
       VerifyUserResponseModel verifyUserResponse =
           await AuthRepo().verifyUserRepo(body: model);
@@ -121,7 +119,6 @@ class AuthViewModel extends GetxController {
 
   Future<void> resendOtpViewModel({Map<String, dynamic>? model}) async {
     _resendOtpApiResponse = ApiResponse.loading(message: 'Loading');
-    update();
     try {
       ResendOtpResponseModel resendOtpResponse =
           await AuthRepo().resendOtpRepo(body: model);
