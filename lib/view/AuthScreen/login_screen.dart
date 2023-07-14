@@ -418,8 +418,9 @@ class _LoginScreenState extends State<LoginScreen> {
     );
     try {
       await controller.loginViewModel(model: {
-        "mobileNo": "9824022009"
-        // controller.mobileController.text.trim()
+        "mobileNo":
+        // "9824022009"
+        controller.mobileController.text.trim()
       });
 
       if (controller.logInApiResponse.status == Status.COMPLETE) {

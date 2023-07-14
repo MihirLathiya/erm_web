@@ -385,7 +385,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     );
     try {
       await controller.verifyUserViewModel(
-          model: {"id": "${PreferenceManager.getUserId()}", "otp": "123456"});
+          model: {"id": "${PreferenceManager.getUserId()}", "otp": '${controller.pinController.text}'});
 
       if (controller.logInverifyUserApiResponse.status == Status.COMPLETE) {
         VerifyUserResponseModel verifyUserResponseModel =
