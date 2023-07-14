@@ -12,4 +12,5 @@ class ApiUrl {
   static String allUserList = 'user/allUsers';
   static String getAllTask = 'task/allTasks';
   static String getSingleTask = 'task/';
+  static String createTask = 'task/create';
 }

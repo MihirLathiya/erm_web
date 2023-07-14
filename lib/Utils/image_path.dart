@@ -26,7 +26,7 @@ class ImagePath {
   static String timer04 = 'assets/images/timer04.png';
   static String timer05 = 'assets/images/timer05.png';
   static String attechment = 'assets/images/attechment.svg';
-  static String trash = 'assets/images/trash.svg';
+  static String trash = 'assets/images/trash.png';
   static String edit = 'assets/images/edit.svg';
   static String gallary = 'assets/images/gallary.svg';
   static String xls = 'assets/images/XLS.svg';

@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:erm_web/Model/ResponseModel/get_all_task_res_model.dart';
 import 'package:erm_web/Model/ResponseModel/get_single_task_res_model.dart';
 import 'package:erm_web/Model/Service/api_service.dart';
+import 'package:erm_web/Model/Service/get_storage_service.dart';
 import 'package:erm_web/Model/Service/url.dart';
+import 'package:http/http.dart' as http;
 
 class TaskRepo {
   /// GET ALL TASK
@@ -25,27 +27,36 @@ class TaskRepo {
     return getSingleTaskResponseModel;
   }
 
-// /// GET ALL TASK VIEW MODEL
-// ApiResponse _getAllTaskApiResponse =
-// ApiResponse.initial(message: 'Initialization');
-//
-// ApiResponse get getAllTaskApiResponse => _getAllTaskApiResponse;
-//
-// Future<void> getAllTaskViewModel({String? userId}) async {
-//   _getAllTaskApiResponse = ApiResponse.loading(message: 'Loading');
-//   try {
-//    List<GetAllTaskResponseModel> getAllTaskResponse =
-//     await GetUserRepo().getUserRepo(userId: userId);
-//     print("GetAllTaskResponseModel=response==>getAllTaskResponse");
-//
-//     _getAllTaskApiResponse = ApiResponse.complete(getAllTaskResponse);
-//   } catch (e) {
-//     print("GetAllTaskResponseModel=e==>$e");
-//
-//     _getAllTaskApiResponse = ApiResponse.error(message: 'error');
-//   }
-//   update();
-// }//
+  /// CREATE  TASK
+  Future<bool> createTaskRepo({Map<String, String>? body}) async {
+    var headers = {'Authorization': 'Bearer ${PreferenceManager.getToken()}'};
+
+    try {
+      var request = http.MultipartRequest(
+          'POST', Uri.parse('${BaseUrl.baseUrl}${ApiUrl.createTask}'));
+      request.fields.addAll(body!);
+      request.headers.addAll(headers);
+
+      http.StreamedResponse response = await request.send();
+
+      if (response.statusCode >= 200 && response.statusCode <= 299) {
+        var data = jsonDecode(await response.stream.bytesToString());
+        print('--Done------${data}');
+        return true;
+      } else {
+        var data = jsonDecode(await response.stream.bytesToString());
+
+        print('--ERROR------${data}');
+
+        return false;
+      }
+    } catch (e) {
+      print('--TRY ERROR------${e}');
+
+      return false;
+    }
+  }
+
 //
 //
 // / GET SINGLE TASK VIEW MODEL

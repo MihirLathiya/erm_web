@@ -1,8 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:erm_web/Model/ResponseModel/all_user_res_model.dart';
 import 'package:erm_web/Utils/colors.dart';
 import 'package:erm_web/Utils/common_string.dart';
 import 'package:erm_web/Utils/image_path.dart';
-import 'package:erm_web/ViewModel/media_view_controller.dart';
+import 'package:erm_web/ViewModel/task_managment_controller.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -10,7 +13,7 @@ import 'package:get/get.dart';
 /// ADD ATTECHMENT POPUP
 
 Future<dynamic> attechmentDialogBox(double size, double font,
-    {required MediaViewController controller}) {
+    {required TaskManagmentController controller}) {
   return Get.generalDialog(
     barrierDismissible: true,
     barrierLabel: '',
@@ -19,10 +22,10 @@ Future<dynamic> attechmentDialogBox(double size, double font,
       return StatefulBuilder(
         builder: (context, setState) {
           return SimpleDialog(
-            contentPadding: EdgeInsets.all(20 * size),
+            contentPadding: EdgeInsets.all(20),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            insetPadding: EdgeInsets.symmetric(horizontal: 20 * size),
+            insetPadding: EdgeInsets.symmetric(horizontal: 20),
             children: [
               Container(
                 width: GetPlatform.isWindows ? 366 : Get.width,
@@ -32,10 +35,10 @@ Future<dynamic> attechmentDialogBox(double size, double font,
                     Text(
                       "Upload file ",
                       style: TextStyle(
-                        fontSize: 16 * font,
+                        fontSize: 16,
                       ),
                     ),
-                    CommonSizedBox(height: 20 * size),
+                    CommonSizedBox(height: 20),
                     DottedBorder(
                       color: CommonColor.mainColor,
                       borderType: BorderType.RRect,
@@ -45,34 +48,43 @@ Future<dynamic> attechmentDialogBox(double size, double font,
                         borderRadius: BorderRadius.all(Radius.circular(12)),
                         child: Container(
                           width: Get.width,
-                          height: 121 * size,
+                          height: 121,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
                             color: Color(0xffe8f1fd),
                           ),
                           padding: EdgeInsets.symmetric(
-                            vertical: 23 * size,
-                            horizontal: 23 * size,
+                            vertical: 23,
+                            horizontal: 23,
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              CommonSizedBox(height: 8 * size),
+                              CommonSizedBox(height: 8),
                               Row(
                                 children: [
                                   Text(
                                     "Drag and Drop file here or ",
                                     style: TextStyle(
-                                      fontSize: 12 * font,
+                                      fontSize: 12,
                                     ),
                                   ),
                                   InkWell(
-                                    onTap: () {},
+                                    onTap: () async {
+                                      FilePickerResult? result =
+                                          await FilePicker.platform.pickFiles();
+                                      if (result != null) {
+                                        controller.updateAttechMentFile(
+                                            result.files.first);
+                                        print(
+                                            '------${controller.attechmentFile}');
+                                      }
+                                    },
                                     child: Text(
                                       "chose file",
                                       style: TextStyle(
                                         decoration: TextDecoration.underline,
-                                        fontSize: 12 * font,
+                                        fontSize: 12,
                                         fontWeight: FontWeight.w400,
                                         color: Colors.black,
                                       ),
@@ -85,52 +97,52 @@ Future<dynamic> attechmentDialogBox(double size, double font,
                         ),
                       ),
                     ),
-                    CommonSizedBox(height: 8 * size),
+                    CommonSizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           "Supported formates :XLS , XLSX ",
                           style: TextStyle(
-                            fontSize: 12 * font,
+                            fontSize: 12,
                             color: CommonColor.textColor,
                           ),
                         ),
                         Text(
                           "maximum size : 25 MBX ",
                           style: TextStyle(
-                            fontSize: 12 * font,
+                            fontSize: 12,
                             color: CommonColor.textColor,
                           ),
                         )
                       ],
                     ),
-                    CommonSizedBox(height: 22 * size),
+                    CommonSizedBox(height: 22),
                     Container(
-                      padding: EdgeInsets.all(16 * size),
+                      padding: EdgeInsets.all(16),
                       width: Get.width,
                       color: Color(0xffF8FAFE),
                       child: Row(
                         children: [
                           SvgPicture.asset(
                             ImagePath.pdf,
-                            height: 28 * size,
-                            width: 25 * size,
+                            height: 28,
+                            width: 25,
                           ),
-                          CommonSizedBox(width: 17 * size),
+                          CommonSizedBox(width: 17),
                           Column(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
                                 "File Title.pdf",
                                 style: TextStyle(
-                                  fontSize: 14 * font,
+                                  fontSize: 14,
                                 ),
                               ),
                               Text(
                                 "313 KB . 31 Aug, 2022  ",
                                 style: TextStyle(
-                                  fontSize: 12 * font,
+                                  fontSize: 12,
                                   color: CommonColor.textColor,
                                 ),
                               )
@@ -141,24 +153,23 @@ Future<dynamic> attechmentDialogBox(double size, double font,
                             onTap: () {},
                             child: SvgPicture.asset(
                               ImagePath.fi_download,
-                              height: 16 * size,
-                              width: 16 * size,
+                              height: 16,
+                              width: 16,
                             ),
                           ),
-                          CommonSizedBox(width: 8 * size),
+                          CommonSizedBox(width: 8),
                           InkWell(
                             onTap: () {},
-                            child: SvgPicture.asset(
+                            child: Image.asset(
                               ImagePath.trash,
-                              height: 16 * size,
-                              width: 16 * size,
-                              color: Color(0xffF92828),
+                              height: 16,
+                              width: 16,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    CommonSizedBox(height: 20 * size),
+                    CommonSizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
@@ -167,8 +178,8 @@ Future<dynamic> attechmentDialogBox(double size, double font,
                             Get.back();
                           },
                           child: Container(
-                            height: 30 * size,
-                            width: 92 * size,
+                            height: 30,
+                            width: 92,
                             decoration: BoxDecoration(
                               border: Border.all(color: CommonColor.mainColor),
                               borderRadius: BorderRadius.circular(8),
@@ -177,21 +188,21 @@ Future<dynamic> attechmentDialogBox(double size, double font,
                             child: Text(
                               "Cancel ",
                               style: TextStyle(
-                                fontSize: 12 * font,
+                                fontSize: 12,
                                 color: CommonColor.mainColor,
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
                           ),
                         ),
-                        CommonSizedBox(width: 8 * size),
+                        CommonSizedBox(width: 8),
                         InkWell(
                           onTap: () {
                             Get.back();
                           },
                           child: Container(
-                            height: 30 * size,
-                            width: 92 * size,
+                            height: 30,
+                            width: 92,
                             decoration: BoxDecoration(
                               color: Color(0xffe6edfc),
                               border: Border.all(color: CommonColor.mainColor),
@@ -201,7 +212,7 @@ Future<dynamic> attechmentDialogBox(double size, double font,
                             child: Text(
                               "Submit ",
                               style: TextStyle(
-                                fontSize: 12 * font,
+                                fontSize: 12,
                                 color: CommonColor.mainColor,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -222,8 +233,12 @@ Future<dynamic> attechmentDialogBox(double size, double font,
 }
 
 /// ADD WATCHER POPUP
-Future<dynamic> addWatcherDialogBox(double size, double font,
-    {required MediaViewController controller}) {
+Future<dynamic> addWatcherDialogBox(
+  double size,
+  double font, {
+  required TaskManagmentController controller,
+  List<AllUserResponseModel>? allUserList,
+}) {
   return Get.generalDialog(
     barrierDismissible: true,
     barrierLabel: '',
@@ -235,7 +250,7 @@ Future<dynamic> addWatcherDialogBox(double size, double font,
             contentPadding: EdgeInsets.all(20 * size),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            insetPadding: EdgeInsets.symmetric(horizontal: 20 * size),
+            insetPadding: EdgeInsets.symmetric(horizontal: 20),
             children: [
               Container(
                 width: GetPlatform.isWindows ? 366 : Get.width,
@@ -245,10 +260,10 @@ Future<dynamic> addWatcherDialogBox(double size, double font,
                     Text(
                       "Add Watchers",
                       style: TextStyle(
-                        fontSize: 16 * font,
+                        fontSize: 16,
                       ),
                     ),
-                    CommonSizedBox(height: 20 * size),
+                    CommonSizedBox(height: 20),
                     Container(
                       width: Get.width,
                       clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -258,20 +273,24 @@ Future<dynamic> addWatcherDialogBox(double size, double font,
                         boxShadow: [
                           BoxShadow(
                             color: Color(0x332865dc).withAlpha(30),
-                            offset: Offset(0 * size, 4 * size),
-                            blurRadius: 15 * size,
+                            offset: Offset(0, 4),
+                            blurRadius: 15,
                           ),
                         ],
                       ),
                       child: TextField(
+                        controller: controller.searchWatcherController,
+                        onChanged: (value) {
+                          setState(() {});
+                        },
                         decoration: InputDecoration(
                           prefixIcon: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               SvgPicture.asset(
                                 ImagePath.search,
-                                height: 18 * size,
-                                width: 18 * size,
+                                height: 18,
+                                width: 18,
                               ),
                             ],
                           ),
@@ -282,19 +301,19 @@ Future<dynamic> addWatcherDialogBox(double size, double font,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Container(
-                                    width: 1 * size,
-                                    height: 21 * size,
+                                    width: 1,
+                                    height: 21,
                                     color: CommonColor.textColor,
                                   ),
                                   SizedBox(
-                                    width: 10 * size,
+                                    width: 10,
                                   ),
                                   Transform.rotate(
                                     angle: 91.13,
                                     child: SvgPicture.asset(
                                       ImagePath.arrowDown,
-                                      height: 18 * size,
-                                      width: 18 * size,
+                                      height: 18,
+                                      width: 18,
                                       color: CommonColor.textColor,
                                     ),
                                   ),
@@ -303,7 +322,7 @@ Future<dynamic> addWatcherDialogBox(double size, double font,
                             ],
                           ),
                           hintStyle: TextStyle(
-                            fontSize: 12 * font,
+                            fontSize: 12,
                             fontWeight: FontWeight.w400,
                           ),
                           hintText: 'Search Any Existing User Watchers',
@@ -313,110 +332,151 @@ Future<dynamic> addWatcherDialogBox(double size, double font,
                         ),
                       ),
                     ),
-                    CommonSizedBox(height: 20 * size),
+                    CommonSizedBox(height: 20),
                     Container(
-                      height: 229 * size,
-                      padding: EdgeInsets.all(20 * size),
+                      height: 229,
+                      padding: EdgeInsets.all(20),
                       width: Get.width,
                       decoration: BoxDecoration(
                         color: Color(0xffe8f1fd),
-                        borderRadius: BorderRadius.circular(8 * size),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       child: MediaQuery.removePadding(
                         context: context,
                         removeTop: true,
                         child: ListView.separated(
                           physics: BouncingScrollPhysics(),
-                          itemCount: 4,
+                          itemCount: allUserList!.length,
                           itemBuilder: (context, index) {
-                            return InkWell(
-                              onTap: () {
-                                controller.updateAddWatcher(index);
-                                setState(() {});
-                              },
-                              child: Container(
-                                height: 36 * size,
-                                width: Get.width,
-                                padding: EdgeInsets.all(3),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    colors: [
-                                      controller.addWatcher == index
-                                          ? Color(0xff2865DC).withAlpha(200)
-                                          : Colors.white,
-                                      controller.addWatcher == index
-                                          ? Color(0xff2865DC).withAlpha(100)
-                                          : Colors.white,
-                                      Color(0xffFFFFFF),
-                                      Color(0xffFFFFFF),
-                                    ],
-                                  ),
-                                ),
-                                child: Container(
-                                  clipBehavior: Clip.antiAliasWithSaveLayer,
-                                  decoration: BoxDecoration(
-                                    color: Color(0xffffffff),
-                                    borderRadius: BorderRadius.circular(8),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Color(0x332865dc).withAlpha(30),
-                                        offset: Offset(0 * size, 4 * size),
-                                        blurRadius: 15 * size,
-                                      ),
-                                    ],
-                                  ),
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 10 * size),
-                                  child: Row(
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(1000),
-                                        child: Image.network(
-                                          'https://wallpapercave.com/fwp/wp12507633.jpg',
-                                          height: 24 * size,
-                                          width: 24 * size,
-                                          fit: BoxFit.fill,
+                            return allUserList[index]
+                                        .firstName
+                                        .toString()
+                                        .toLowerCase()
+                                        .contains(controller
+                                            .searchWatcherController.text
+                                            .toLowerCase()) ||
+                                    controller
+                                        .searchWatcherController.text.isEmpty
+                                ? InkWell(
+                                    onTap: () {
+                                      controller.updateSelectWatcherValue(
+                                          id: allUserList[index].id.toString());
+                                      setState(() {});
+                                    },
+                                    child: Container(
+                                      height: 36,
+                                      width: Get.width,
+                                      padding: EdgeInsets.all(3),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                        gradient: LinearGradient(
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter,
+                                          colors: [
+                                            controller.selectWatcherValue
+                                                    .contains(
+                                                        allUserList[index].id)
+                                                ? Color(0xff2865DC)
+                                                    .withAlpha(200)
+                                                : Colors.white,
+                                            controller.selectWatcherValue
+                                                    .contains(
+                                                        allUserList[index].id)
+                                                ? Color(0xff2865DC)
+                                                    .withAlpha(100)
+                                                : Colors.white,
+                                            Color(0xffFFFFFF),
+                                            Color(0xffFFFFFF),
+                                          ],
                                         ),
                                       ),
-                                      CommonSizedBox(width: 6 * size),
-                                      Text(
-                                        "Maciej kalaska",
-                                        style: TextStyle(
-                                            fontSize: 12 * font,
-                                            color: CommonColor.textColor),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
+                                      child: Container(
+                                        clipBehavior:
+                                            Clip.antiAliasWithSaveLayer,
+                                        decoration: BoxDecoration(
+                                          color: Color(0xffffffff),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Color(0x332865dc)
+                                                  .withAlpha(30),
+                                              offset: Offset(0, 4),
+                                              blurRadius: 15,
+                                            ),
+                                          ],
+                                        ),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        child: Row(
+                                          children: [
+                                            ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(1000),
+                                              child: CachedNetworkImage(
+                                                imageUrl:
+                                                    '${allUserList[index].photo}',
+                                                height: 24,
+                                                width: 24,
+                                                placeholder: (context, url) =>
+                                                    CircularProgressIndicator(),
+                                                errorWidget:
+                                                    (context, url, error) =>
+                                                        Icon(
+                                                  Icons.error,
+                                                  size: 20,
+                                                ),
+                                              ),
+                                            ),
+                                            CommonSizedBox(width: 6),
+                                            Text(
+                                              "${allUserList[index].firstName}",
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: CommonColor.textColor),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                : SizedBox();
                           },
                           separatorBuilder: (context, index) {
-                            return CommonSizedBox(height: 15 * size);
+                            return CommonSizedBox(
+                                height: allUserList[index]
+                                            .firstName
+                                            .toString()
+                                            .toLowerCase()
+                                            .contains(controller
+                                                .searchWatcherController.text
+                                                .toLowerCase()) ||
+                                        controller.searchWatcherController.text
+                                            .isEmpty
+                                    ? 15
+                                    : 0);
                           },
                         ),
                       ),
                     ),
-                    CommonSizedBox(height: 20 * size),
+                    CommonSizedBox(height: 20),
                     Align(
                       alignment: Alignment.center,
                       child: InkWell(
                         onTap: () {
+                          controller.updateSelectWatcherValue(
+                              id: '', isDuplicate: true);
                           Get.back();
                         },
                         child: Container(
-                          width: 143 * size,
-                          height: 33 * size,
+                          width: 143,
+                          height: 33,
                           decoration: BoxDecoration(
                             boxShadow: [
                               BoxShadow(
                                 color: Color(0x332865dc),
-                                offset: Offset(0 * size, 4 * size),
-                                blurRadius: 7.5 * size,
+                                offset: Offset(0, 4),
+                                blurRadius: 7.5,
                               ),
                             ],
                             borderRadius: BorderRadius.circular(8),
@@ -427,15 +487,15 @@ Future<dynamic> addWatcherDialogBox(double size, double font,
                             children: [
                               SvgPicture.asset(
                                 ImagePath.add,
-                                height: 18 * size,
-                                width: 18 * size,
+                                height: 18,
+                                width: 18,
                                 color: CommonColor.white,
                               ),
-                              CommonSizedBox(width: 6 * size),
+                              CommonSizedBox(width: 6),
                               Text(
                                 "Add Watchers",
                                 style: TextStyle(
-                                  fontSize: 14 * font,
+                                  fontSize: 14,
                                   color: CommonColor.white,
                                 ),
                               ),
@@ -457,7 +517,8 @@ Future<dynamic> addWatcherDialogBox(double size, double font,
 
 /// ADD USER POP UP
 Future<dynamic> addUserDialogBox(double size, double font,
-    {required MediaViewController controller}) {
+    {required TaskManagmentController controller,
+    List<AllUserResponseModel>? allUserList}) {
   return Get.generalDialog(
     barrierDismissible: true,
     barrierLabel: '',
@@ -466,10 +527,10 @@ Future<dynamic> addUserDialogBox(double size, double font,
       return StatefulBuilder(
         builder: (context, setStat) {
           return SimpleDialog(
-            contentPadding: EdgeInsets.all(20 * size),
+            contentPadding: EdgeInsets.all(20),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            insetPadding: EdgeInsets.symmetric(horizontal: 20 * size),
+            insetPadding: EdgeInsets.symmetric(horizontal: 20),
             children: [
               Container(
                 width: GetPlatform.isWindows ? 366 : Get.width,
@@ -479,10 +540,10 @@ Future<dynamic> addUserDialogBox(double size, double font,
                     Text(
                       "Username list:",
                       style: TextStyle(
-                        fontSize: 16 * font,
+                        fontSize: 16,
                       ),
                     ),
-                    CommonSizedBox(height: 20 * size),
+                    CommonSizedBox(height: 20),
                     Container(
                       width: Get.width,
                       clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -492,20 +553,25 @@ Future<dynamic> addUserDialogBox(double size, double font,
                         boxShadow: [
                           BoxShadow(
                             color: Color(0x332865dc).withAlpha(30),
-                            offset: Offset(0 * size, 4 * size),
-                            blurRadius: 15 * size,
+                            offset: Offset(0, 4),
+                            blurRadius: 15,
                           ),
                         ],
                       ),
                       child: TextField(
+                        controller: controller.searchUserNameController,
+                        onChanged: (value) {
+                          controller.update();
+                          setStat(() {});
+                        },
                         decoration: InputDecoration(
                           prefixIcon: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               SvgPicture.asset(
                                 ImagePath.search,
-                                height: 18 * size,
-                                width: 18 * size,
+                                height: 18,
+                                width: 18,
                               ),
                             ],
                           ),
@@ -516,19 +582,19 @@ Future<dynamic> addUserDialogBox(double size, double font,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Container(
-                                    width: 1 * size,
-                                    height: 21 * size,
+                                    width: 1,
+                                    height: 21,
                                     color: CommonColor.textColor,
                                   ),
                                   SizedBox(
-                                    width: 10 * size,
+                                    width: 10,
                                   ),
                                   Transform.rotate(
                                     angle: 91.13,
                                     child: SvgPicture.asset(
                                       ImagePath.arrowDown,
-                                      height: 18 * size,
-                                      width: 18 * size,
+                                      height: 18,
+                                      width: 18,
                                       color: CommonColor.textColor,
                                     ),
                                   ),
@@ -537,7 +603,7 @@ Future<dynamic> addUserDialogBox(double size, double font,
                             ],
                           ),
                           hintStyle: TextStyle(
-                            fontSize: 12 * font,
+                            fontSize: 12,
                             fontWeight: FontWeight.w400,
                           ),
                           hintText: 'Search Any Existing User Watchers',
@@ -547,122 +613,146 @@ Future<dynamic> addUserDialogBox(double size, double font,
                         ),
                       ),
                     ),
-                    CommonSizedBox(height: 20 * size),
+                    CommonSizedBox(height: 20),
                     Container(
-                      height: 229 * size,
-                      padding: EdgeInsets.all(20 * size),
+                      height: 229,
+                      padding: EdgeInsets.all(20),
                       width: Get.width,
                       decoration: BoxDecoration(
                         color: Color(0xffe8f1fd),
-                        borderRadius: BorderRadius.circular(8 * size),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       child: MediaQuery.removePadding(
                         context: context,
                         removeTop: true,
                         child: ListView.separated(
                           physics: BouncingScrollPhysics(),
-                          itemCount: 4,
+                          itemCount: allUserList!.length,
                           itemBuilder: (context, index) {
-                            return InkWell(
-                              onTap: () {
-                                controller.updateSelectUserName(index);
-                                setStat(() {});
-                              },
-                              child: Container(
-                                height: 36 * size,
-                                width: Get.width,
-                                padding: EdgeInsets.all(3),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    colors: [
-                                      controller.selectUserName == index
-                                          ? Color(0xff2865DC).withAlpha(200)
-                                          : Colors.white,
-                                      controller.selectUserName == index
-                                          ? Color(0xff2865DC).withAlpha(100)
-                                          : Colors.white,
-                                      Color(0xffFFFFFF),
-                                      Color(0xffFFFFFF),
-                                    ],
-                                  ),
-                                ),
-                                child: Container(
-                                  clipBehavior: Clip.antiAliasWithSaveLayer,
-                                  decoration: BoxDecoration(
-                                    color: Color(0xffffffff),
-                                    borderRadius: BorderRadius.circular(8),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Color(0x332865dc).withAlpha(30),
-                                        offset: Offset(0 * size, 4 * size),
-                                        blurRadius: 15 * size,
+                            return allUserList[index]
+                                        .firstName
+                                        .toString()
+                                        .toLowerCase()
+                                        .contains(controller
+                                            .searchUserNameController.text
+                                            .toLowerCase()) ||
+                                    controller
+                                        .searchUserNameController.text.isEmpty
+                                ? InkWell(
+                                    onTap: () {
+                                      controller.updateSelectUserName(index);
+                                      setStat(() {});
+                                    },
+                                    child: Container(
+                                      height: 36,
+                                      width: Get.width,
+                                      padding: EdgeInsets.all(3),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                        gradient: LinearGradient(
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter,
+                                          colors: [
+                                            controller.selectUserName == index
+                                                ? Color(0xff2865DC)
+                                                    .withAlpha(200)
+                                                : Colors.white,
+                                            controller.selectUserName == index
+                                                ? Color(0xff2865DC)
+                                                    .withAlpha(100)
+                                                : Colors.white,
+                                            Color(0xffFFFFFF),
+                                            Color(0xffFFFFFF),
+                                          ],
+                                        ),
                                       ),
-                                    ],
-                                  ),
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 10 * size),
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        "Maciej kalaska",
-                                        style: TextStyle(
-                                            fontSize: 12 * font,
-                                            color: CommonColor.textColor),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
+                                      child: Container(
+                                        clipBehavior:
+                                            Clip.antiAliasWithSaveLayer,
+                                        decoration: BoxDecoration(
+                                          color: Color(0xffffffff),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Color(0x332865dc)
+                                                  .withAlpha(30),
+                                              offset: Offset(0, 4),
+                                              blurRadius: 15,
+                                            ),
+                                          ],
+                                        ),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              "${allUserList[index].firstName}",
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: CommonColor.textColor),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                : SizedBox();
                           },
                           separatorBuilder: (context, index) {
-                            return CommonSizedBox(height: 15 * size);
+                            return CommonSizedBox(
+                                height: allUserList[index]
+                                            .firstName
+                                            .toString()
+                                            .toLowerCase()
+                                            .contains(controller
+                                                .searchUserNameController.text
+                                                .toLowerCase()) ||
+                                        controller.searchUserNameController.text
+                                            .isEmpty
+                                    ? 15
+                                    : 0);
                           },
                         ),
                       ),
                     ),
-                    CommonSizedBox(height: 20 * size),
+                    CommonSizedBox(height: 20),
                     Align(
                       alignment: Alignment.center,
                       child: InkWell(
                         onTap: () {
+                          if (controller.selectUserName != -1) {
+                            controller.updateSelectUserNameValue(
+                              name: allUserList[controller.selectUserName]
+                                  .firstName,
+                              id: allUserList[controller.selectUserName].id,
+                            );
+                            print('-------${controller.selectUserNameValue}');
+                          }
                           Get.back();
                         },
                         child: Container(
-                          width: 143 * size,
-                          height: 33 * size,
+                          width: 143,
+                          height: 33,
                           decoration: BoxDecoration(
                             boxShadow: [
                               BoxShadow(
                                 color: Color(0x332865dc),
-                                offset: Offset(0 * size, 4 * size),
-                                blurRadius: 7.5 * size,
+                                offset: Offset(0, 4),
+                                blurRadius: 7.5,
                               ),
                             ],
                             borderRadius: BorderRadius.circular(8),
                             color: CommonColor.mainColor,
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SvgPicture.asset(
-                                ImagePath.add,
-                                height: 18 * size,
-                                width: 18 * size,
+                          child: Center(
+                            child: Text(
+                              "Add",
+                              style: TextStyle(
+                                fontSize: 14,
                                 color: CommonColor.white,
                               ),
-                              CommonSizedBox(width: 6 * size),
-                              Text(
-                                "Add Watchers",
-                                style: TextStyle(
-                                  fontSize: 14 * font,
-                                  color: CommonColor.white,
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
                         ),
                       ),

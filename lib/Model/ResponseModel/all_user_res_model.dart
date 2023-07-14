@@ -4,12 +4,16 @@
 
 import 'dart:convert';
 
-List<AllUserResponseModel> allUserResponseModelFromJson(String str) => List<AllUserResponseModel>.from(json.decode(str).map((x) => AllUserResponseModel.fromJson(x)));
+List<AllUserResponseModel> allUserResponseModelFromJson(String str) =>
+    List<AllUserResponseModel>.from(
+        json.decode(str).map((x) => AllUserResponseModel.fromJson(x)));
 
-String allUserResponseModelToJson(List<AllUserResponseModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String allUserResponseModelToJson(List<AllUserResponseModel> data) =>
+    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class AllUserResponseModel {
   String? id;
+  bool? isSelected;
   String? userId;
   String? mobileNo;
   String? userName;
@@ -60,6 +64,7 @@ class AllUserResponseModel {
     this.oeplSelectCompany,
     this.oeplEmployeeCode,
     this.userDivision,
+    this.isSelected,
     this.whatsappNumber,
     this.userBranchName,
     this.isVerified,
@@ -69,65 +74,72 @@ class AllUserResponseModel {
     this.updatedAt,
   });
 
-  factory AllUserResponseModel.fromJson(Map<String, dynamic> json) => AllUserResponseModel(
-    id: json["id"],
-    userId: json["userId"],
-    mobileNo: json["mobileNo"],
-    userName: json["userName"],
-    firstName: json["firstName"],
-    lastName: json["lastName"],
-    description: json["description"],
-    title: json["title"],
-    photo: json["photo"],
-    addressStreet: json["addressStreet"],
-    addressCity: json["addressCity"],
-    addressState: json["addressState"],
-    addressCountry: json["addressCountry"],
-    addressPostalcode: json["addressPostalcode"],
-    userType: json["userType"],
-    deviceType: json["deviceType"],
-    oeplDocumentType: json["oeplDocumentType"],
-    oeplLoginIp: json["oeplLoginIp"],
-    oeplSelectCompany: json["oeplSelectCompany"],
-    oeplEmployeeCode: json["oeplEmployeeCode"],
-    userDivision: json["userDivision"],
-    whatsappNumber: json["whatsappNumber"],
-    userBranchName: json["userBranchName"],
-    isVerified: json["isVerified"],
-    isActive: json["isActive"],
-    isDeleted: json["isDeleted"],
-    createdAt: json["createdAt"] == null ? null : DateTime.parse(json["createdAt"]),
-    updatedAt: json["updatedAt"] == null ? null : DateTime.parse(json["updatedAt"]),
-  );
+  factory AllUserResponseModel.fromJson(Map<String, dynamic> json) =>
+      AllUserResponseModel(
+        id: json["id"],
+        isSelected: false,
+        userId: json["userId"],
+        mobileNo: json["mobileNo"],
+        userName: json["userName"],
+        firstName: json["firstName"],
+        lastName: json["lastName"],
+        description: json["description"],
+        title: json["title"],
+        photo: json["photo"],
+        addressStreet: json["addressStreet"],
+        addressCity: json["addressCity"],
+        addressState: json["addressState"],
+        addressCountry: json["addressCountry"],
+        addressPostalcode: json["addressPostalcode"],
+        userType: json["userType"],
+        deviceType: json["deviceType"],
+        oeplDocumentType: json["oeplDocumentType"],
+        oeplLoginIp: json["oeplLoginIp"],
+        oeplSelectCompany: json["oeplSelectCompany"],
+        oeplEmployeeCode: json["oeplEmployeeCode"],
+        userDivision: json["userDivision"],
+        whatsappNumber: json["whatsappNumber"],
+        userBranchName: json["userBranchName"],
+        isVerified: json["isVerified"],
+        isActive: json["isActive"],
+        isDeleted: json["isDeleted"],
+        createdAt: json["createdAt"] == null
+            ? null
+            : DateTime.parse(json["createdAt"]),
+        updatedAt: json["updatedAt"] == null
+            ? null
+            : DateTime.parse(json["updatedAt"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "userId": userId,
-    "mobileNo": mobileNo,
-    "userName": userName,
-    "firstName": firstName,
-    "lastName": lastName,
-    "description": description,
-    "title": title,
-    "photo": photo,
-    "addressStreet": addressStreet,
-    "addressCity": addressCity,
-    "addressState": addressState,
-    "addressCountry": addressCountry,
-    "addressPostalcode": addressPostalcode,
-    "userType": userType,
-    "deviceType": deviceType,
-    "oeplDocumentType": oeplDocumentType,
-    "oeplLoginIp": oeplLoginIp,
-    "oeplSelectCompany": oeplSelectCompany,
-    "oeplEmployeeCode": oeplEmployeeCode,
-    "userDivision": userDivision,
-    "whatsappNumber": whatsappNumber,
-    "userBranchName": userBranchName,
-    "isVerified": isVerified,
-    "isActive": isActive,
-    "isDeleted": isDeleted,
-    "createdAt": createdAt?.toIso8601String(),
-    "updatedAt": updatedAt?.toIso8601String(),
-  };
+        "id": id,
+        "userId": userId,
+        "mobileNo": mobileNo,
+        "userName": userName,
+        "firstName": firstName,
+        "lastName": lastName,
+        "description": description,
+        "title": title,
+        "photo": photo,
+        "isSelected": isSelected,
+        "addressStreet": addressStreet,
+        "addressCity": addressCity,
+        "addressState": addressState,
+        "addressCountry": addressCountry,
+        "addressPostalcode": addressPostalcode,
+        "userType": userType,
+        "deviceType": deviceType,
+        "oeplDocumentType": oeplDocumentType,
+        "oeplLoginIp": oeplLoginIp,
+        "oeplSelectCompany": oeplSelectCompany,
+        "oeplEmployeeCode": oeplEmployeeCode,
+        "userDivision": userDivision,
+        "whatsappNumber": whatsappNumber,
+        "userBranchName": userBranchName,
+        "isVerified": isVerified,
+        "isActive": isActive,
+        "isDeleted": isDeleted,
+        "createdAt": createdAt?.toIso8601String(),
+        "updatedAt": updatedAt?.toIso8601String(),
+      };
 }

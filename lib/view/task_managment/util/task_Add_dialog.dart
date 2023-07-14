@@ -1,16 +1,20 @@
+import 'package:erm_web/Model/Repo/get_task_repo.dart';
+import 'package:erm_web/Model/ResponseModel/all_user_res_model.dart';
 import 'package:erm_web/Utils/colors.dart';
+import 'package:erm_web/Utils/common_snackbar.dart';
 import 'package:erm_web/Utils/common_string.dart';
 import 'package:erm_web/Utils/image_path.dart';
-import 'package:erm_web/ViewModel/media_view_controller.dart';
+import 'package:erm_web/Utils/loader.dart';
+import 'package:erm_web/ViewModel/task_managment_controller.dart';
 import 'package:erm_web/responsive.dart';
 import 'package:erm_web/view/task_managment/util/dialog_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
-addTaskDialogForWeb(
-  BuildContext context,
-) {
+addTaskDialogForWeb(BuildContext context,
+    {List<AllUserResponseModel>? allUserList,
+    TaskManagmentController? controller}) {
   return showDialog(
     context: context,
     builder: (context) {
@@ -31,7 +35,7 @@ addTaskDialogForWeb(
                     : width <= 1280
                         ? 700
                         : Get.width,
-                child: GetBuilder<MediaViewController>(
+                child: GetBuilder<TaskManagmentController>(
                   builder: (controller) {
                     return MediaQuery.removePadding(
                       context: context,
@@ -104,22 +108,34 @@ addTaskDialogForWeb(
                                         ],
                                       ),
                                       CommonSizedBox(height: 27),
-                                      Container(
-                                        padding:
-                                            EdgeInsets.fromLTRB(10, 10, 10, 10),
-                                        width: Get.width,
-                                        decoration: BoxDecoration(
-                                          color: Color(0xffe8f1fd),
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                        child: Text(
-                                          ' Task Title:',
-                                          style: TextStyle(
-                                            fontSize: 16 * font,
-                                            fontWeight: FontWeight.w400,
-                                            color: Color(0xff262525),
-                                          ),
+                                      TextField(
+                                        controller:
+                                            controller.taskTitleController,
+                                        style: TextStyle(
+                                            fontSize: 16, color: Colors.black),
+                                        maxLines: 1,
+                                        decoration: InputDecoration(
+                                          fillColor: Color(0xffe8f1fd),
+                                          hintText: 'Task Title',
+                                          focusedBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Colors.transparent),
+                                              borderRadius:
+                                                  BorderRadius.circular(8)),
+                                          enabledBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Colors.transparent),
+                                              borderRadius:
+                                                  BorderRadius.circular(8)),
+                                          border: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Colors.transparent),
+                                              borderRadius:
+                                                  BorderRadius.circular(8)),
+                                          hintStyle: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.black),
+                                          filled: true,
                                         ),
                                       ),
                                       CommonSizedBox(height: 30),
@@ -164,6 +180,8 @@ addTaskDialogForWeb(
                                           borderRadius:
                                               BorderRadius.circular(8),
                                           child: TextField(
+                                            controller: controller
+                                                .taskDescriptionController,
                                             style: TextStyle(
                                               fontSize: 16,
                                             ),
@@ -372,7 +390,8 @@ addTaskDialogForWeb(
                                 ),
                                 if (width <= 1280)
                                   taskTitleWidget(
-                                      size, font, controller, width),
+                                      context, size, font, controller, width,
+                                      allUserList: allUserList),
                               ],
                             ),
                           ),
@@ -380,7 +399,9 @@ addTaskDialogForWeb(
                           if (width > 1281) VerticalDivider(),
                           if (width > 1281) CommonSizedBox(width: 20),
                           if (width > 1281)
-                            taskTitleWidget(size, font, controller, width),
+                            taskTitleWidget(
+                                context, size, font, controller, width,
+                                allUserList: allUserList),
                         ],
                       ),
                     );
@@ -392,11 +413,14 @@ addTaskDialogForWeb(
         ],
       );
     },
-  );
+  ).whenComplete(() {
+    controller?.clearAllValue();
+  });
 }
 
-Padding taskTitleWidget(
-    double size, double font, MediaViewController controller, double width) {
+Padding taskTitleWidget(BuildContext context, double size, double font,
+    TaskManagmentController controller, double width,
+    {List<AllUserResponseModel>? allUserList}) {
   return Padding(
     padding: EdgeInsets.symmetric(
       vertical: 25,
@@ -479,7 +503,8 @@ Padding taskTitleWidget(
                   Expanded(
                     child: InkWell(
                       onTap: () {
-                        addUserDialogBox(size, font, controller: controller);
+                        addUserDialogBox(size, font,
+                            controller: controller, allUserList: allUserList);
                       },
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8),
@@ -500,7 +525,8 @@ Padding taskTitleWidget(
                               fontSize: 12,
                               fontWeight: FontWeight.w400,
                             ),
-                            hintText: 'Maciej kalaska',
+                            hintText:
+                                '${controller.selectUserNameValue['userName'].toString().isEmpty ? 'Select User' : controller.selectUserNameValue['userName'].toString()}',
                             border: InputBorder.none,
                             filled: true,
                             fillColor: Colors.white,
@@ -522,18 +548,35 @@ Padding taskTitleWidget(
                   ),
                   CommonSizedBox(width: 44),
                   Expanded(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: TextField(
-                        decoration: InputDecoration(
-                          hintStyle: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
+                    child: InkWell(
+                      onTap: () async {
+                        final DateTime? picked = await showDatePicker(
+                          context: context,
+                          initialDate:
+                              controller.selectedDueDate ?? DateTime.now(),
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime(2100),
+                        );
+                        if (picked != null) {
+                          controller.updateDueData(picked);
+                        }
+                      },
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: TextField(
+                          enabled: false,
+                          decoration: InputDecoration(
+                            hintStyle: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                            ),
+                            hintText: controller.selectedDueDate == null
+                                ? 'Select due date'
+                                : 'Due in ${controller.selectedDueDate?.difference(DateTime.now()).inDays} days',
+                            border: InputBorder.none,
+                            filled: true,
+                            fillColor: Colors.white,
                           ),
-                          hintText: 'Due in 5 days',
-                          border: InputBorder.none,
-                          filled: true,
-                          fillColor: Colors.white,
                         ),
                       ),
                     ),
@@ -545,7 +588,8 @@ Padding taskTitleWidget(
                 alignment: Alignment.topLeft,
                 child: InkWell(
                   onTap: () {
-                    addWatcherDialogBox(size, font, controller: controller);
+                    addWatcherDialogBox(size, font,
+                        controller: controller, allUserList: allUserList);
                   },
                   child: Container(
                     width: 143,
@@ -584,6 +628,89 @@ Padding taskTitleWidget(
                 ),
               ),
             ],
+          ),
+        ),
+        SizedBox(
+          height: 40,
+        ),
+        Align(
+          alignment: Alignment.topLeft,
+          child: InkWell(
+            onTap: () async {
+              if (controller.taskTitleController.text.isNotEmpty &&
+                  controller.selectUserNameValue['id'].toString().isNotEmpty &&
+                  controller.selectedDueDate != null) {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return CommonWidget.CircularIndicator;
+                  },
+                );
+                try {
+                  Map<String, String> body = {
+                    'title': controller.taskTitleController.text.toString(),
+                    'assignTo': controller.selectUserNameValue['id'].toString(),
+                    'dueDate': controller.selectedDueDate.toString(),
+                    'watchers[]': controller.selectWatcherValue.first.toString()
+                  };
+                  bool response = await TaskRepo().createTaskRepo(body: body);
+
+                  if (response == true) {
+                    Get.back();
+                    Get.back();
+                    CommonSnackBar.getSuccessSnackBar(
+                        context, 'Task Create Successfully');
+                  } else {
+                    Get.back();
+                    CommonSnackBar.getFailedSnackBar(
+                        context, 'Something went wrong!');
+                  }
+                } catch (e) {
+                  Get.back();
+                  print('-----ERROR TRY----$e');
+                  CommonSnackBar.getFailedSnackBar(
+                      context, 'Something went wrong!');
+                }
+              } else if (controller.taskTitleController.text.isEmpty) {
+                CommonSnackBar.getWarningSnackBar(
+                    context, 'Title should not be empty');
+              } else if (controller.selectUserNameValue['id']
+                  .toString()
+                  .isEmpty) {
+                CommonSnackBar.getWarningSnackBar(
+                    context, 'AssignTo should not be empty');
+              } else if (controller.selectedDueDate == null) {
+                CommonSnackBar.getWarningSnackBar(
+                    context, 'DueDate should not be empty');
+              } else if (controller.selectWatcherValue.isEmpty) {
+                CommonSnackBar.getWarningSnackBar(
+                    context, 'Watcher should not be empty');
+              }
+            },
+            child: Container(
+              width: 143,
+              height: 40,
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0x332865dc),
+                    offset: Offset(0, 4),
+                    blurRadius: 7.5,
+                  ),
+                ],
+                borderRadius: BorderRadius.circular(8),
+                color: CommonColor.mainColor,
+              ),
+              child: Center(
+                child: Text(
+                  "Submit",
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: CommonColor.white,
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
       ],

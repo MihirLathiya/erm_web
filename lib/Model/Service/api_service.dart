@@ -27,6 +27,8 @@ class APIService {
     try {
       if (apitype == APIType.aGet) {
         final result = await http.get(Uri.parse(url), headers: header);
+        print("REQUEST PARAMETER ======>>>>> $header");
+
         response = returnResponse(result.statusCode, result.body);
         print("REQUEST url ======>>>>> $url");
         print("REQUEST PARAMETER ======>>>>> $header");

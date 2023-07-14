@@ -1,6 +1,13 @@
 import 'package:another_stepper/another_stepper.dart';
+import 'package:erm_web/Model/Api/api_response.dart';
+import 'package:erm_web/Model/Repo/all_user_repo.dart';
+import 'package:erm_web/Model/Repo/get_task_repo.dart';
+import 'package:erm_web/Model/ResponseModel/all_user_res_model.dart';
+import 'package:erm_web/Model/ResponseModel/get_all_task_res_model.dart';
 import 'package:erm_web/Utils/image_path.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dropzone/flutter_dropzone.dart';
 import 'package:get/get.dart';
 
 class TaskManagmentController extends GetxController {
@@ -220,4 +227,128 @@ class TaskManagmentController extends GetxController {
       ),
     ),
   ];
+
+  /// GET ALL TASK VIEW MODEL
+  ApiResponse _getAllTaskApiResponse =
+      ApiResponse.initial(message: 'Initialization');
+
+  ApiResponse get getAllTaskApiResponse => _getAllTaskApiResponse;
+
+  Future<void> getAllTaskViewModel() async {
+    _getAllTaskApiResponse = ApiResponse.loading(message: 'Loading');
+    try {
+      List<GetAllTaskResponseModel> getAllTaskResponse =
+          await TaskRepo().getAllTaskRepo();
+      print("GetAllTaskResponseModel=response==>getAllTaskResponse");
+
+      _getAllTaskApiResponse = ApiResponse.complete(getAllTaskResponse);
+    } catch (e) {
+      print("GetAllTaskResponseModel=e==>$e");
+
+      _getAllTaskApiResponse = ApiResponse.error(message: 'error');
+    }
+    update();
+  }
+
+  /// All User VIEW MODEL
+  ApiResponse _allUserApiResponse =
+      ApiResponse.initial(message: 'Initialization');
+
+  ApiResponse get allUserApiResponse => _allUserApiResponse;
+
+  Future<void> allUserViewModel() async {
+    _allUserApiResponse = ApiResponse.loading(message: 'Loading');
+    try {
+      List<AllUserResponseModel> allUserList =
+          await AllUserRepo().allUserRepo();
+      print("AllUserResponseModel=response==>$allUserList");
+
+      _allUserApiResponse = ApiResponse.complete(allUserList);
+    } catch (e) {
+      print("AllUserResponseModel=e==>$e");
+
+      _allUserApiResponse = ApiResponse.error(message: 'error');
+    }
+    update();
+  }
+
+  /// CREATE TASK SCREEN
+  int followUp = 0;
+  updateFollowUp(int index) {
+    followUp = index;
+    update();
+  }
+
+  TextEditingController searchUserNameController = TextEditingController();
+  TextEditingController searchWatcherController = TextEditingController();
+  TextEditingController taskDescriptionController = TextEditingController();
+  TextEditingController taskTitleController = TextEditingController();
+  int selectUserName = -1;
+  updateSelectUserName(int index) {
+    selectUserName = index;
+    update();
+  }
+
+  Map<String, dynamic> selectUserNameValue = {'userName': '', 'id': ''};
+  List<String> selectWatcherValue = [];
+  List<String> selectFinalWatcherValue = [];
+  DropzoneViewController? dropzoneViewController;
+  DateTime? selectedDueDate;
+  List<PlatformFile> attechmentFile = [];
+  updateSelectUserNameValue({String? name, String? id}) {
+    selectUserNameValue = {'userName': name, 'id': id};
+    update();
+  }
+
+  updateAttechMentFile(PlatformFile selectFiles) {
+    attechmentFile.add(selectFiles);
+    update();
+  }
+
+  updateDueData(DateTime dueDate) {
+    selectedDueDate = dueDate;
+    update();
+  }
+
+  updateSelectWatcherValue({String? id = '', bool isDuplicate = false}) {
+    if (isDuplicate == false) {
+      if (selectWatcherValue.contains(id)) {
+        selectWatcherValue.remove(id);
+      } else {
+        selectWatcherValue.add(id!);
+      }
+    } else {
+      selectFinalWatcherValue = [...selectWatcherValue];
+    }
+
+    print('----------${selectWatcherValue}');
+    print('----------${selectFinalWatcherValue}');
+    update();
+  }
+
+  int addWatcher = -1;
+  updateAddWatcher(int index) {
+    addWatcher = index;
+    update();
+  }
+
+  final List<String> taskType = [' Task View ', ' Create Task '];
+  String? selectedTaskValue;
+
+  updateTaskType(String value) {
+    selectedTaskValue = value;
+    update();
+  }
+
+  clearAllValue() {
+    addWatcher = -1;
+    selectUserNameValue = {'userName': '', 'id': ''};
+    selectWatcherValue = [];
+    selectUserName = -1;
+    searchUserNameController.clear();
+    searchWatcherController.clear();
+    selectFinalWatcherValue.clear();
+    taskDescriptionController.clear();
+    taskTitleController.clear();
+  }
 }
