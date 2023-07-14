@@ -641,6 +641,7 @@ Padding taskTitleWidget(BuildContext context, double size, double font,
                   controller.selectUserNameValue['id'].toString().isNotEmpty &&
                   controller.selectedDueDate != null) {
                 showDialog(
+                  barrierDismissible: false,
                   context: context,
                   builder: (context) {
                     return CommonWidget.CircularIndicator;
