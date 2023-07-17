@@ -8,14 +8,7 @@ import 'package:erm_web/Model/Service/url.dart';
 import 'package:http/http.dart' as http;
 
 class TaskRepo {
-  /// GET ALL TASK
-  Future<List<GetAllTaskResponseModel>> getAllTaskRepo() async {
-    var response = await APIService().getResponse(
-        url: '${BaseUrl.baseUrl}${ApiUrl.getAllTask}', apitype: APIType.aGet);
-    List<GetAllTaskResponseModel> getAllTask =
-        getAllTaskResponseModelFromJson(jsonEncode(response));
-    return getAllTask;
-  }
+
 
   /// GET SINGLE TASK
   Future<GetSingleTaskResponseModel> getSingleTaskRepo({String? taskId}) async {

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:erm_web/Model/Api/api_response.dart';
 import 'package:erm_web/Model/ResponseModel/all_user_res_model.dart';
 import 'package:erm_web/Utils/colors.dart';
@@ -9,12 +11,14 @@ import 'package:erm_web/ViewModel/task_managment_controller.dart';
 import 'package:erm_web/responsive.dart';
 import 'package:erm_web/view/home_screen/home_screen.dart';
 import 'package:erm_web/view/main_screen.dart';
-import 'package:erm_web/view/task_managment/mobile_view_/mobile_task_management_screen.dart';
 import 'package:erm_web/view/task_managment/util/task_Add_dialog.dart';
 import 'package:erm_web/view/task_managment/web_view/web_task_managment_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+
+import 'mobile_view/mobile_task_management_screen.dart';
 
 class ManagementScreen extends StatefulWidget {
   const ManagementScreen({Key? key}) : super(key: key);
@@ -31,10 +35,46 @@ class _ManagementScreenState extends State<ManagementScreen> {
   @override
   void initState() {
     print('------${Get.width}');
-    taskManagmentController.getAllTaskViewModel();
     taskManagmentController.allUserViewModel();
+    getAllTaskRepo();
     // TODO: implement initState
     super.initState();
+  }
+
+  bool show = false;
+  var res;
+  Future<bool> getAllTaskRepo() async {
+    setState(() {
+      show = true;
+    });
+    var headers = {
+      // 'Content-Type': 'application/json',
+      'Authorization':
+          'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiMTllMjFmMC0wZmU2LTRhZWYtODMzZC0xNTUyOWI4N2E1ODEiLCJtb2JpbGVObyI6Ijk4MjQwMjIwMDkiLCJyb2xlIjoidXNlciIsImlhdCI6MTY4OTYxNDcwNSwiZXhwIjoxNjg5NzAxMTA1fQ.H3_KIpXuRaynU3KVTREHUERrCkP6A9nuVl9919OOslc'
+    };
+    var request = http.Request(
+        'GET',
+        Uri.parse(
+            'http://ec2-13-127-52-162.ap-south-1.compute.amazonaws.com:5000/task/allTasks'));
+    request.body = json.encode({"taskAssign": "AssignByMe"});
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      setState(() {
+        show = false;
+      });
+      var data = jsonDecode(await response.stream.bytesToString());
+      res = data;
+      print('------RES---${data}');
+      return true;
+    } else {
+      var data = jsonDecode(await response.stream.bytesToString());
+
+      print('------RES---${data}');
+      return false;
+    }
   }
 
   @override

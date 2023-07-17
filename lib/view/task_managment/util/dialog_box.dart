@@ -5,10 +5,11 @@ import 'package:erm_web/Utils/colors.dart';
 import 'package:erm_web/Utils/common_string.dart';
 import 'package:erm_web/Utils/image_path.dart';
 import 'package:erm_web/ViewModel/task_managment_controller.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dropzone/flutter_dropzone.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 /// ADD ATTECHMENT POPUP
 
@@ -57,41 +58,51 @@ Future<dynamic> attechmentDialogBox(double size, double font,
                             vertical: 23,
                             horizontal: 23,
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          child: Stack(
+                            alignment: Alignment.center,
                             children: [
-                              CommonSizedBox(height: 8),
+                              DropzoneView(
+                                onCreated: (controllera) {
+                                  controller.dropController = controllera;
+                                },
+                                onDrop: (value) async {
+                                  await controller.acceptFile(value);
+                                  setState(() {});
+                                },
+                              ),
                               Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
                                 children: [
-                                  Text(
-                                    "Drag and Drop file here or ",
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                  InkWell(
-                                    onTap: () async {
-                                      FilePickerResult? result =
-                                          await FilePicker.platform.pickFiles();
-                                      if (result != null) {
-                                        controller.updateAttechMentFile(
-                                            result.files.first);
-                                        print(
-                                            '------${controller.attechmentFile}');
-                                      }
-                                    },
-                                    child: Text(
-                                      "chose file",
-                                      style: TextStyle(
-                                        decoration: TextDecoration.underline,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.black,
+                                  // CommonSizedBox(height: 8),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "Drag and Drop file here or ",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                        ),
                                       ),
-                                    ),
-                                  ),
+                                      InkWell(
+                                        onTap: () async {
+                                          await controller.pickUpFile();
+                                          setState(() {});
+                                        },
+                                        child: Text(
+                                          "chose file",
+                                          style: TextStyle(
+                                            decoration:
+                                                TextDecoration.underline,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w400,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  )
                                 ],
-                              )
+                              ),
                             ],
                           ),
                         ),
@@ -118,57 +129,72 @@ Future<dynamic> attechmentDialogBox(double size, double font,
                       ],
                     ),
                     CommonSizedBox(height: 22),
-                    Container(
-                      padding: EdgeInsets.all(16),
-                      width: Get.width,
-                      color: Color(0xffF8FAFE),
-                      child: Row(
-                        children: [
-                          SvgPicture.asset(
-                            ImagePath.pdf,
-                            height: 28,
-                            width: 25,
-                          ),
-                          CommonSizedBox(width: 17),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "File Title.pdf",
-                                style: TextStyle(
-                                  fontSize: 14,
+                    if (controller.data != null)
+                      Container(
+                        padding: EdgeInsets.all(16),
+                        width: Get.width,
+                        color: Color(0xffF8FAFE),
+                        child: Row(
+                          children: [
+                            SvgPicture.asset(
+                              controller.name!.contains('png') ||
+                                      controller.name!.contains('jpg') ||
+                                      controller.name!.contains('jpeg')
+                                  ? ImagePath.png
+                                  : controller.name!.contains('pdf') ||
+                                          controller.name!.contains('doc')
+                                      ? ImagePath.pdf
+                                      : ImagePath.xls,
+                              height: 28,
+                              width: 25,
+                            ),
+                            CommonSizedBox(width: 17),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "${controller.name}",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                  ),
                                 ),
+                                Text(
+                                  "${controller.size} . ${DateFormat.yMMMEd().format(DateTime.now())}  ",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: CommonColor.textColor,
+                                  ),
+                                )
+                              ],
+                            ),
+                            Spacer(),
+                            InkWell(
+                              onTap: () {},
+                              child: SvgPicture.asset(
+                                ImagePath.fi_download,
+                                height: 16,
+                                width: 16,
                               ),
-                              Text(
-                                "313 KB . 31 Aug, 2022  ",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: CommonColor.textColor,
-                                ),
-                              )
-                            ],
-                          ),
-                          Spacer(),
-                          InkWell(
-                            onTap: () {},
-                            child: SvgPicture.asset(
-                              ImagePath.fi_download,
-                              height: 16,
-                              width: 16,
                             ),
-                          ),
-                          CommonSizedBox(width: 8),
-                          InkWell(
-                            onTap: () {},
-                            child: Image.asset(
-                              ImagePath.trash,
-                              height: 16,
-                              width: 16,
+                            CommonSizedBox(width: 8),
+                            InkWell(
+                              onTap: () {
+                                controller.data = null;
+                                controller.url = null;
+                                controller.name = null;
+                                controller.size = null;
+                                setState(() {});
+                              },
+                              child: Image.asset(
+                                ImagePath.trash,
+                                height: 16,
+                                width: 16,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
                     CommonSizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
